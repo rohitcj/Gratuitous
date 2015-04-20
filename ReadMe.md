@@ -11,5 +11,4 @@ Completed:
 [x] Optional: Settings page to change the default rounding up/down options
 [x] Optional: Settings page to change the Theme
 
-Notes: Autolayout best optimized for 3.5-inch screen (layout works fine for other iPhone sizes)
-Add a simple logo
+Notes: Autolayout best optimized for 3.5-inch screen (layout works fine for other iPhone sizes). Add a simple logo
