@@ -21,6 +21,11 @@
                                 <rect key="frame" x="0.0" y="64" width="320" height="44"/>
                                 <items>
                                     <navigationItem id="0AT-ei-lWg">
+                                        <barButtonItem key="leftBarButtonItem" title="PayPal" id="11L-ua-0oR">
+                                            <connections>
+                                                <action selector="paypalButtonPressed:" destination="vXZ-lx-hvc" id="fKt-kd-IfM"/>
+                                            </connections>
+                                        </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" title="Settings" id="Umb-cE-A42">
                                             <connections>
                                                 <segue destination="Hef-i3-PnE" kind="show" id="oeF-Bk-OtC"/>
@@ -240,6 +245,7 @@
                         <outlet property="billAmountTextField" destination="lvy-F8-zqj" id="h0d-f1-BsL"/>
                         <outlet property="gratuitousTitleLabel" destination="lx7-hM-J5C" id="2uT-wc-OlY"/>
                         <outlet property="horizontalSplitView" destination="MkW-fa-nQD" id="3lB-N2-Fsr"/>
+                        <outlet property="paypalBarButton" destination="11L-ua-0oR" id="JAz-l2-icu"/>
                         <outlet property="roundingSegementedControl" destination="uEb-h4-BHg" id="IF1-MB-x7L"/>
                         <outlet property="settingsBarButton" destination="Umb-cE-A42" id="Pga-bF-oat"/>
                         <outlet property="sliderLabel" destination="d29-H2-8nn" id="M6c-4v-Zci"/>

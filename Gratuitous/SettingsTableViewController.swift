@@ -46,15 +46,15 @@ class SettingsTableViewController: UITableViewController {
     
     func loadDefaultSettings()
     {
-        if let currentDefaultTipPercentage = defaults.objectForKey("defaultTipPercentage")! as? Int {
+        if let currentDefaultTipPercentage = defaults.objectForKey("defaultTipPercentage") as? Int {
             defaultTipPercentage = currentDefaultTipPercentage
         }
         
-        if let currentRoundingSettings = defaults.objectForKey("defaultRoundingSettings")! as? Int {
+        if let currentRoundingSettings = defaults.objectForKey("defaultRoundingSettings") as? Int {
             defaultRoundingSettings = Rounding(rawValue: currentRoundingSettings)!
         }
         
-        if let currentThemeSettings = defaults.objectForKey("defaultThemeSettings")! as? Int {
+        if let currentThemeSettings = defaults.objectForKey("defaultThemeSettings") as? Int {
             defaultTheme = Theme(rawValue: currentThemeSettings)!
         }
         

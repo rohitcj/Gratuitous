@@ -22,6 +22,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var splitTotalLabel: UILabel!
     @IBOutlet weak var splitTotalValueLabel: UILabel!
     @IBOutlet weak var settingsBarButton: UIBarButtonItem!
+    @IBOutlet weak var paypalBarButton: UIBarButtonItem!
     @IBOutlet weak var billAmountTextField: UITextField!
     @IBOutlet weak var horizontalSplitView: UIView!
     @IBOutlet weak var tipPercentageSegmentedControl: UISegmentedControl!
@@ -33,6 +34,9 @@ class HomeViewController: UIViewController {
     var defaultTipPercentage = 20
     var defaultRoundingSettings = Rounding.None
     var defaultThemeSettings = Theme.Light
+    var lastBillAmount = 0.00
+    var lastUseDate: NSDate = NSDate()
+    var showCachedBillAmount: Bool = false
     var defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
     override func viewDidLoad() {
@@ -44,9 +48,28 @@ class HomeViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        saveCachedSettings()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        loadCurrentSettings()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        saveCachedSettings()
+    }
+    
+    /*
+    // MARK: - IBActions
+    */
+    
     @IBAction func billAmountTextFieldEditingChanged(sender: AnyObject) {
+        ProcessTip()
+    }
+    
+    func ProcessTip()
+    {
         var billAmount = (billAmountTextField.text as NSString).doubleValue
         var tipPercentages = [0.15, 0.20, 0.25] // ToDo: change to enum, move to helper class
         var roundingSettings = [Rounding.Down, Rounding.None, Rounding.Up]
@@ -61,16 +84,16 @@ class HomeViewController: UIViewController {
         {
         case Rounding.Down:
             
-                total = floor(total)
-                tip = total - billAmount
+            total = floor(total)
+            tip = total - billAmount
             
         case Rounding.Up:
             
-                total = ceil(total)
-                tip = total - billAmount
+            total = ceil(total)
+            tip = total - billAmount
             
         default:
-                total = billAmount + tip
+            total = billAmount + tip
         }
         
         var splitNumber = Int(splitSlider.value)
@@ -91,23 +114,42 @@ class HomeViewController: UIViewController {
         view.endEditing(true)
     }
     
+    @IBAction func paypalButtonPressed(sender: AnyObject) {
+        let paypalUrl = NSURL(string: "https://www.paypal.com")
+        UIApplication.sharedApplication().openURL(paypalUrl!)
+    }
+    
+    /*
+    // MARK: - Helper functions
+    */
+
     func initializeDefaults()  {
         tipValueLabel.text = "$0.00"
         totalValueLabel.text = "$0.00"
         splitTotalValueLabel.text = "$0.00"
-        defaults.setObject(defaultTipPercentage, forKey: "defaultTipPercentage")
-        defaults.setObject(defaultRoundingSettings.rawValue, forKey: "defaultRoundingSettings")
-        defaults.setObject(defaultThemeSettings.rawValue, forKey: "defaultThemeSettings")
-        defaults.synchronize() // just to be safe
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        loadWithCurrentSettings()
-    }
-    
-    func loadWithCurrentSettings() {
         
-        if var defaultTheme = defaults.objectForKey("defaultThemeSettings")! as? Int {
+        if var currentLastUseDate = defaults.objectForKey("lastUseDate") as? NSDate {
+            var currentDate: NSDate = NSDate()
+            var timeDiff: NSTimeInterval = currentDate.timeIntervalSinceDate(currentLastUseDate)
+            let durationInSeconds = Int(timeDiff)
+            if (durationInSeconds < 60 * 10) // if duration < 10 mins
+            {
+                showCachedBillAmount = true
+            }
+        }
+        
+        if showCachedBillAmount {
+            if var currentLastBillAmount = defaults.objectForKey("lastBillAmount") as? Double {
+                lastBillAmount = currentLastBillAmount
+                billAmountTextField.text = "\(lastBillAmount)"
+                ProcessTip()
+            }
+        }
+    }
+    
+    func loadCurrentSettings() {
+        
+        if var defaultTheme = defaults.objectForKey("defaultThemeSettings") as? Int {
             defaultThemeSettings = Theme(rawValue: defaultTheme)!
             switch defaultThemeSettings
             {
@@ -119,8 +161,12 @@ class HomeViewController: UIViewController {
                 setLightThemeColors()
             }
         }
+        else {
+            defaultThemeSettings = Theme.Light
+            setLightThemeColors()
+        }
         
-        if var defaultTipPercentage = defaults.objectForKey("defaultTipPercentage")! as? Int {
+        if var defaultTipPercentage = defaults.objectForKey("defaultTipPercentage") as? Int {
             switch defaultTipPercentage
             {
             case 15:
@@ -134,7 +180,7 @@ class HomeViewController: UIViewController {
             }
         }
         
-        if var defaultRounding = defaults.objectForKey("defaultRoundingSettings")! as? Int {
+        if var defaultRounding = defaults.objectForKey("defaultRoundingSettings") as? Int {
             defaultRoundingSettings = Rounding(rawValue: defaultRounding)!
             switch defaultRoundingSettings
             {
@@ -146,6 +192,15 @@ class HomeViewController: UIViewController {
                 roundingSegementedControl.selectedSegmentIndex = 2
             }
         }
+    }
+    
+    func saveCachedSettings()
+    {
+        lastBillAmount = (billAmountTextField.text as NSString).doubleValue
+        defaults.setObject(lastBillAmount, forKey: "lastBillAmount")
+        var currentDate: NSDate = NSDate()
+        defaults.setObject(currentDate, forKey: "lastUseDate")
+        defaults.synchronize()
     }
     
     func setLightThemeColors()
