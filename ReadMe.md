@@ -1,7 +1,7 @@
 TipCalculator
 This is a Tip Calculator application for iOS submitted as the pre-assignment requirement for CodePath.
 
-Time spent: 4 hours
+Time spent: 5 hours
 
 Completed:
 
